@@ -1,0 +1,10 @@
+---
+- name: Converge
+  hosts: all
+  roles:
+    - role: lean_delivery.java
+    - role: lean_delivery.solr_standalone
+    - role: ansible-role-solr-master
+  vars:
+    change_default_password: False
+    solr_master_defined_host: solr-master.example.com
