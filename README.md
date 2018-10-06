@@ -1,4 +1,5 @@
 Solr Configuration as Slave
+
 =========
 [![License](https://img.shields.io/badge/license-Apache-green.svg?style=flat)](https://raw.githubusercontent.com/lean-delivery/ansible-role-solr-slave/master/LICENSE)
 [![Build Status](https://travis-ci.org/lean-delivery/ansible-role-solr-slave.svg?branch=master)](https://travis-ci.org/lean-delivery/ansible-role-solr-slave)
