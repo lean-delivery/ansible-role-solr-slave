@@ -5,6 +5,9 @@ solr_version: 7.1.0
 solr_service_name: "solr"
 solr_with_systemd: True
 
+solr_base_path: /var/solr
+solr_home: "{{ solr_base_path }}/data"
+
 configset_list:
   - default
 auto_populate_configset_list: True
