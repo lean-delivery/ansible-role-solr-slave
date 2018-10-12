@@ -3,4 +3,4 @@ dest_main_path: "{{ overrride_dest_main_path|default('/opt', True) }}"
 dest_solr_path: "{{ overrride_dest_solr_path|\
   default(dest_main_path + '/solr-' + solr_version, True) }}"
 solr_configset_path: "{{ overrride_solr_configset_path|\
-  default(dest_solr_path + '/server/solr/configsets', True) }}"
+  default(solr_home + '/configsets', True) }}"
