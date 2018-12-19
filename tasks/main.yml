@@ -1,8 +1,11 @@
 ---
 - name: "Load a variables"
-  include_vars: "{{ item }}"
+  include_vars: "{{ platform_var }}"
   with_first_found:
     - "{{ ansible_os_family }}.yml"
+    - "system/not-supported.yml"
+  loop_control:
+    loop_var: platform_var
 
 - name: "Generate Solr Master URL using variable"
   set_fact:
