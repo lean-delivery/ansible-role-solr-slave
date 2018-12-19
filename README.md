@@ -2,6 +2,9 @@ Solr Configuration as Slave
 =========
 [![License](https://img.shields.io/badge/license-Apache-green.svg?style=flat)](https://raw.githubusercontent.com/lean-delivery/ansible-role-solr-slave/master/LICENSE)
 [![Build Status](https://travis-ci.org/lean-delivery/ansible-role-solr-slave.svg?branch=master)](https://travis-ci.org/lean-delivery/ansible-role-solr-slave)
+[![Galaxy](https://img.shields.io/badge/galaxy-lean__delivery.solr__slave-blue.svg)](https://galaxy.ansible.com/lean_delivery/solr_slave)
+![Ansible](https://img.shields.io/ansible/role/d/30434.svg)
+![Ansible](https://img.shields.io/badge/dynamic/json.svg?label=min_ansible_version&url=https%3A%2F%2Fgalaxy.ansible.com%2Fapi%2Fv1%2Froles%2F30434%2F&query=$.min_ansible_version)
 ## Summary
 
 This role:
@@ -63,6 +66,7 @@ Requirements
 
 Example Inventory
 ----------------
+```ini
 [solr-master]
 solr-master.example.com
 
@@ -77,6 +81,7 @@ ansible_user=admin
 ansible_password=password
 ansible_connection=winrm
 ansible_winrm_server_cert_validation=ignore
+```
 
 Example Playbook
 ----------------
