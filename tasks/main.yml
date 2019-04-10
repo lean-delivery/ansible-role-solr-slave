@@ -1,32 +1,32 @@
 ---
-- name: "Load a variables"
-  include_vars: "{{ platform_var }}"
+- name: Load a variables
+  include_vars: '{{ platform_var }}'
   with_first_found:
-    - "{{ ansible_os_family }}.yml"
-    - "system/not-supported.yml"
+    - '{{ ansible_os_family }}.yml'
+    - 'system/not-supported.yml'
   loop_control:
     loop_var: platform_var
 
-- name: "Generate Solr Master URL using variable"
+- name: Generate Solr Master URL using variable
   set_fact:
     solr_master_generated_url:
-      "{{ (solr_ssl_enabled) | ternary('https', 'http') }}://\
+      '{{ (solr_ssl_enabled) | ternary("https", "http") }}://\
       {{ solr_master_defined_host }}:\
-      {{ solr_port }}/solr/${solr.core.name}/replication"
+      {{ solr_port }}/solr/${solr.core.name}/replication'
   when: solr_master_defined_host is defined
 
-- name: "Generate Solr Master URL using inventory"
+- name: Generate Solr Master URL using inventory
   set_fact:
     solr_master_generated_url:
-      "{{ (solr_ssl_enabled) | ternary('https', 'http') }}://\
-      {{ groups[(master_group | default('solr-master'))]|first }}:\
-      {{ solr_port }}/solr/${solr.core.name}/replication"
+      '{{ (solr_ssl_enabled) | ternary("https", "http") }}://\
+      {{ groups[(master_group | default("solr-master"))]|first }}:\
+      {{ solr_port }}/solr/${solr.core.name}/replication'
   when: solr_master_defined_host is not defined
 
-- name: "Choose platform based task"
-  include_tasks: "{{ platform }}"
+- name: Choose platform based task
+  include_tasks: '{{ platform }}'
   with_first_found:
-    - "system/{{ ansible_os_family }}.yml"
-    - "system/not-supported.yml"
+    - 'system/{{ ansible_os_family }}.yml'
+    - 'system/not-supported.yml'
   loop_control:
     loop_var: platform

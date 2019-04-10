@@ -2,51 +2,51 @@
 # Replace on win systems does not work correctly for path separator
 # https://github.com/ansible/ansible/issues/38199
 # here is a workarround
-- name: "Set path with separator"
+- name: Set path with separator
   set_fact:
-    configset_list: "{{ configset_list | map('regex_replace', '(.*)', '\\\\\\1') | list }}"
+    configset_list: '{{ configset_list | map("regex_replace", "(.*)", "\\\1") | list }}'
   when: not auto_populate_configset_list
 
-- name: "Set configset list"
+- name: Set configset list
   win_find:
-    paths: "{{ solr_configset_path }}"
+    paths: '{{ solr_configset_path }}'
     file_type: directory
   register: configset_output
   when: auto_populate_configset_list
 
-- name: "Populate configset list"
+- name: Populate configset list
   set_fact:
     configset_list: "{{ configset_output.files | map(attribute='path') | \
       list | map('replace', solr_configset_path, '') | list }}"
   when: auto_populate_configset_list
 
-- name: "Get config files list contained replication handler"
+- name: Get config files list contained replication handler
   win_command: >
     findstr /r /i /n ".*requestHandler.*replication.*solr.ReplicationHandler.*"
     solrconfig.xml
   args:
-    chdir: "{{ solr_configset_path }}{{ item }}\\conf"
-    removes: "{{ solr_configset_path }}{{ item }}\\conf\\solrconfig.xml"
+    chdir: '{{ solr_configset_path }}{{ item }}\conf'
+    removes: '{{ solr_configset_path }}{{ item }}\conf\\solrconfig.xml'
   register: true_configset_xml_list
-  loop: "{{ configset_list }}"
+  loop: '{{ configset_list }}'
   failed_when: False
 
-- name: "Configure solr node as slave"
+- name: Configure solr node as slave
   win_lineinfile:
-    path: "{{ solr_configset_path }}{{ item.item }}\\conf\\solrconfig.xml"
-    insertafter: '<requestHandler name="/replication" class="solr.ReplicationHandler" >'
+    path: '{{ solr_configset_path }}{{ item.item }}\conf\solrconfig.xml'
+    insertafter: '.*<requestHandler name="/replication" class="solr.ReplicationHandler".*>'
     line:
-      "<!-- BEGIN solr ansible custom block --> <lst name=\"slave\">
-      <str name=\"masterUrl\">{{ solr_master_generated_url }}</str>
-      <str name=\"pollInterval\">00:00:60</str> </lst>
-      <!-- END solr ansible custom block -->"
+      '<!-- BEGIN solr ansible custom block --> <lst name="slave">
+      <str name="masterUrl">{{ solr_master_generated_url }}</str>
+      <str name="pollInterval">00:00:60</str> </lst>
+      <!-- END solr ansible custom block -->'
     regexp:
-      "<!--\\sBEGIN\\ssolr\\sansible\\scustom\\sblock(.*)
-      END\\ssolr\\sansible\\scustom\\sblock\\s-->"
-  when: item.stdout_lines|length > 0
-  loop: "{{ true_configset_xml_list.results }}"
+      '<!--\sBEGIN\ssolr\sansible\scustom\sblock(.*)
+      END\ssolr\sansible\scustom\sblock\s-->'
+  when: item.stdout_lines | length
+  loop: '{{ true_configset_xml_list.results }}'
   notify:
-    - "restart solr windows"
+    - restart solr windows
 
-- name: "Force all notified handlers"
+- name: Force all notified handlers
   meta: flush_handlers
