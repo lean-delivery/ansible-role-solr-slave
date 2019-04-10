@@ -30,6 +30,7 @@
   register: true_configset_xml_list
   loop: '{{ configset_list }}'
   failed_when: False
+  changed_when: False
 
 - name: Configure solr node as slave
   win_lineinfile:
