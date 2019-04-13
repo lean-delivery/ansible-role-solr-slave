@@ -13,7 +13,7 @@ This role:
 
 Requirements
 ------------
-  - Minimal Version of the ansible for installation: 2.5
+  - Minimal Version of the ansible for installation: 2.7
   - **Java 8** [![Build Status](https://travis-ci.org/lean-delivery/ansible-role-java.svg?branch=master)](https://travis-ci.org/lean-delivery/ansible-role-java)
   - **Solr installed** [![Build Status](https://travis-ci.org/lean-delivery/ansible-role-solr-standalone.svg?branch=master)](https://travis-ci.org/lean-delivery/ansible-role-solr-standalone)
   - **Supported OS**:
@@ -34,16 +34,15 @@ Requirements
 
 ## Role Variables
   - `solr_version` - matches available version on https://archive.apache.org/dist/lucene/solr/. Tested versions 5.3-7.1.x
-    default: `7.1.0`
+    default: `8.0.0`
   - `solr_dest_main_path` - root directory to store solr folder
-    default: `/opt`
-    default: `C:\Solr`
+    default: `/opt` for Linux
+    default: `C:\Solr` for windows
   - `solr_dest_path` - solr folder path
     default: `{{ dest_main_path }}/solr-{{ solr_version }}`
-    default: `{{ dest_main_path }}\solr-{{ solr_version }}`
   - `solr_configset_path` - solr configset folder path
-    default: `{{ solr_home }}/configsets`
-    default: `{{ solr_dest_path }}\server\solr\configsets`
+    default: `{{ solr_home }}/configsets` for Linux
+    default: `{{ solr_dest_path }}\server\solr\configsets` for Windows
   - `solr_service_name` - solr service name
     default: `solr`
   - `solr_with_systemd` - to run solr as a service

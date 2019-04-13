@@ -9,22 +9,22 @@
 
 - name: Populate configset list
   set_fact:
-    configset_list: "{{ configset_output.files | map(attribute='path') | list | \
-      map('replace', solr_configset_path + '/', '') | list }}"
+    configset_list: >-
+      {{ configset_output.files | map(attribute='path') | list }}
   when: auto_populate_configset_list
 
 - name: Get config files list contained replication handler
   find:
-    paths: "{{ configset_list | \
-      map('regex_replace', '(.*)', solr_configset_path + '/\\1/conf') | list }}"
-    patterns: "solrconfig.xml"
-    contains: "(.*)requestHandler(.*)replication(.*)solr.ReplicationHandler(.*)"
+    paths: '{{ solr_configset_path }}/{{ item | basename }}/conf'
+    patterns: 'solrconfig.xml'
+    contains: '(.*)requestHandler(.*)replication(.*)solr.ReplicationHandler(.*)'
   register: true_configset_xml_list
+  loop: '{{ configset_list }}'
   become: True
 
 - name: Configure solr node as slave
   blockinfile:
-    dest: '{{ item.path }}'
+    dest: '{{ solr_configset_path }}/{{ item.item | basename }}/conf/solrconfig.xml'
     insertafter: '.*<requestHandler name="/replication" class="solr.ReplicationHandler".*>'
     marker: ' <!-- {mark} solr ansible custom block --> '
     block: |
@@ -34,7 +34,8 @@
       </lst>
     state: present
   become: True
-  loop: '{{ true_configset_xml_list.files }}'
+  loop: '{{ true_configset_xml_list.results }}'
+  when: item.matched
   notify:
     - restart solr linux
 

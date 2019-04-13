@@ -1,12 +1,4 @@
 ---
-# Replace on win systems does not work correctly for path separator
-# https://github.com/ansible/ansible/issues/38199
-# here is a workarround
-- name: Set path with separator
-  set_fact:
-    configset_list: '{{ configset_list | map("regex_replace", "(.*)", "\\\1") | list }}'
-  when: not auto_populate_configset_list
-
 - name: Set configset list
   win_find:
     paths: '{{ solr_configset_path }}'
@@ -16,8 +8,8 @@
 
 - name: Populate configset list
   set_fact:
-    configset_list: "{{ configset_output.files | map(attribute='path') | \
-      list | map('replace', solr_configset_path, '') | list }}"
+    configset_list: >-
+      {{ configset_output.files | map(attribute='path') | list }}
   when: auto_populate_configset_list
 
 - name: Get config files list contained replication handler
@@ -25,8 +17,8 @@
     findstr /r /i /n ".*requestHandler.*replication.*solr.ReplicationHandler.*"
     solrconfig.xml
   args:
-    chdir: '{{ solr_configset_path }}{{ item }}\conf'
-    removes: '{{ solr_configset_path }}{{ item }}\conf\\solrconfig.xml'
+    chdir: '{{ solr_configset_path }}/{{ item | win_basename }}/conf'
+    removes: '{{ solr_configset_path }}/{{ item | win_basename }}/conf/solrconfig.xml'
   register: true_configset_xml_list
   loop: '{{ configset_list }}'
   failed_when: False
@@ -34,7 +26,7 @@
 
 - name: Configure solr node as slave
   win_lineinfile:
-    path: '{{ solr_configset_path }}{{ item.item }}\conf\solrconfig.xml'
+    path: '{{ solr_configset_path }}/{{ item.item | win_basename }}\conf\solrconfig.xml'
     insertafter: '.*<requestHandler name="/replication" class="solr.ReplicationHandler".*>'
     line:
       '<!-- BEGIN solr ansible custom block --> <lst name="slave">
