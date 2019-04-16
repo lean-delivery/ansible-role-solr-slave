@@ -1,18 +1,14 @@
 ---
-- name: Windows instances waiting.
-  gather_facts: True
-  hosts: windows
-  tasks:
-    - name: Wait for system to become reachable
-      wait_for_connection:
-        delay: 240
-
 - name: Solr-standalone
   hosts: all
   roles:
     - role: lean_delivery.java
+      java_major_version: 8
+      java_package: jdk
+      java_tarball_install: False
     - role: lean_delivery.solr_standalone
     - role: ansible-role-solr-slave
   vars:
     solr_change_default_password: False
+    solr_copy_default_configsets: True
     solr_master_defined_host: solr-master.example.com

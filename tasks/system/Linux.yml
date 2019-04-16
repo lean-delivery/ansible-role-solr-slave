@@ -1,32 +1,32 @@
 ---
-- name: "Set configset list"
+- name: Set configset list
   find:
-    paths: "{{ solr_configset_path }}"
+    paths: '{{ solr_configset_path }}'
     file_type: directory
   register: configset_output
   become: True
   when: auto_populate_configset_list
 
-- name: "Populate configset list"
+- name: Populate configset list
   set_fact:
-    configset_list: "{{ configset_output.files | map(attribute='path') | list | \
-      map('replace', solr_configset_path + '/', '') | list }}"
+    configset_list: >-
+      {{ configset_output.files | map(attribute='path') | list }}
   when: auto_populate_configset_list
 
-- name: "Get config files list contained replication handler"
+- name: Get config files list contained replication handler
   find:
-    paths: "{{ configset_list | \
-      map('regex_replace', '(.*)', solr_configset_path + '/\\1/conf') | list }}"
-    patterns: "solrconfig.xml"
-    contains: "(.*)requestHandler(.*)replication(.*)solr.ReplicationHandler(.*)"
+    paths: '{{ solr_configset_path }}/{{ item | basename }}/conf'
+    patterns: 'solrconfig.xml'
+    contains: '(.*)requestHandler(.*)replication(.*)solr.ReplicationHandler(.*)'
   register: true_configset_xml_list
+  loop: '{{ configset_list }}'
   become: True
 
-- name: "Configure solr node as slave"
+- name: Configure solr node as slave
   blockinfile:
-    dest: "{{ item.path }}"
-    insertafter: '<requestHandler name="/replication" class="solr.ReplicationHandler" >'
-    marker: " <!-- {mark} solr ansible custom block --> "
+    dest: '{{ solr_configset_path }}/{{ item.item | basename }}/conf/solrconfig.xml'
+    insertafter: '.*<requestHandler name="/replication" class="solr.ReplicationHandler".*>'
+    marker: ' <!-- {mark} solr ansible custom block --> '
     block: |
       <lst name="slave">
       <str name="masterUrl">{{ solr_master_generated_url }}</str>
@@ -34,9 +34,10 @@
       </lst>
     state: present
   become: True
-  loop: "{{ true_configset_xml_list.files }}"
+  loop: '{{ true_configset_xml_list.results }}'
+  when: item.matched
   notify:
-    - "restart solr linux"
+    - restart Solr Linux
 
-- name: "Force all notified handlers"
+- name: Force all notified handlers
   meta: flush_handlers
