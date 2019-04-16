@@ -39,7 +39,7 @@
   when: item.stdout_lines | length
   loop: '{{ true_configset_xml_list.results }}'
   notify:
-    - restart solr windows
+    - restart Solr Windows
 
 - name: Force all notified handlers
   meta: flush_handlers

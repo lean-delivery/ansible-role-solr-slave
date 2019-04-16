@@ -37,7 +37,7 @@
   loop: '{{ true_configset_xml_list.results }}'
   when: item.matched
   notify:
-    - restart solr linux
+    - restart Solr Linux
 
 - name: Force all notified handlers
   meta: flush_handlers

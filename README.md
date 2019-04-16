@@ -34,35 +34,65 @@ Requirements
 
 ## Role Variables
   - `solr_version` - matches available version on https://archive.apache.org/dist/lucene/solr/. Tested versions 5.3-7.1.x
+
     default: `8.0.0`
+
   - `solr_dest_main_path` - root directory to store solr folder
+
     default: `/opt` for Linux
-    default: `C:\Solr` for windows
+
+    default: `C:\Solr` for Windows
+
   - `solr_dest_path` - solr folder path
+
     default: `{{ dest_main_path }}/solr-{{ solr_version }}`
+
   - `solr_configset_path` - solr configset folder path
+
     default: `{{ solr_home }}/configsets` for Linux
+
     default: `{{ solr_dest_path }}\server\solr\configsets` for Windows
+
   - `solr_service_name` - solr service name
+
     default: `solr`
+
   - `solr_with_systemd` - to run solr as a service
+
     default: `True`
+
   - `configset_list` - list of configset directories
-    default: `- default`
+
+    default: `['default']`
+
   - `auto_populate_configset_list` - get all configset directories automatically
+
     default: `True`
+
   - `solr_master_defined_host` - solr master host name. If defined - it will be used, else first server from solr-master group from inventory file
+
     default: `undefined`
+
   - `master_group` - solr master group name in inventory file
+
     default: `solr-master`
+
   - `solr_port` - solr master port
+
     default: `8983`
+
   - `solr_base_path` - path to solr base
+
     default: `/var/solr`
+
   - `solr_home` - path to SOLR_HOME
+
     default: `{{ solr_base_path }}/data`
+
   - `solr_ssl_enabled` - defined if solr master using ssl for connection
+
     default: `True`
+
 
 Example Inventory
 ----------------
